@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="theme-color" content="#f6f5ef"/>
+<title>笔尖上的行星 · 科学侦探故事</title>
+<meta name="description" content="一篇科学调查故事：天王星为何偏离星表？顺着观测与理论之间的裂缝，从纸上算出一颗没人见过的行星。12 个图文短页、6 处推理。"/>
+<style>
+/* ============ 基础与配色（仿原作纸感风格） ============ */
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --paper:#f6f5ef; --panel:#fffdf6; --ink:#20372c; --ink-soft:#4a5a50;
+  --muted:#7c8a7f; --line:#e0ddcd; --line-dark:#c9c2ae;
+  --terra:#b65c49; --terra-deep:#9c4a38; --amber:#a65a30;
+  --sage:#5c7b64; --sage-pale:#edf1e5; --sage-line:#d7e0da;
+  --night:#16282a; --gold:#c8a55a;
+  --serif:Georgia,"Songti SC",STSong,SimSun,serif;
+  --sans:"Microsoft YaHei","PingFang SC",system-ui,sans-serif;
+}
+html{font-size:16px}
+body{background:var(--paper);color:var(--ink);font-family:var(--serif);line-height:1.85;-webkit-font-smoothing:antialiased}
+body.plain{font-family:var(--sans);line-height:1.9}
+body.plain .fig{display:none}
+button{font-family:inherit;cursor:pointer}
+::selection{background:#eadfc8}
+
+/* ============ 顶栏 ============ */
+.topbar{position:sticky;top:0;z-index:20;background:rgba(246,245,239,.94);backdrop-filter:blur(4px);border-bottom:1px solid var(--line)}
+.topbar-inner{max-width:860px;margin:0 auto;padding:10px 20px;display:flex;align-items:center;gap:12px}
+.brand{font-size:.95rem;letter-spacing:.14em;color:var(--ink-soft);display:flex;align-items:center;gap:8px}
+.brand b{color:var(--ink);font-weight:700}
+.brand .dot{width:7px;height:7px;border-radius:50%;background:var(--terra);display:inline-block}
+.topbar .spacer{flex:1}
+.top-btn{border:1px solid var(--line-dark);background:transparent;color:var(--ink-soft);border-radius:999px;padding:5px 14px;font-size:.82rem;letter-spacing:.06em}
+.top-btn:hover{border-color:var(--terra);color:var(--terra)}
+.top-btn.on{background:var(--sage-pale);border-color:var(--sage);color:var(--sage)}
+
+.wrap{max-width:860px;margin:0 auto;padding:28px 20px 90px}
+
+/* ============ 书架 ============ */
+.hero{padding:34px 0 8px;text-align:left}
+.hero .kicker{font-size:.8rem;letter-spacing:.3em;color:var(--terra);margin-bottom:10px}
+.hero h1{font-size:2.1rem;font-weight:700;line-height:1.35;letter-spacing:.02em}
+.hero p.sub{margin-top:12px;color:var(--ink-soft);font-size:1.02rem;max-width:34em}
+.shelf-heading{margin:42px 0 16px;display:flex;align-items:baseline;gap:14px}
+.shelf-heading h2{font-size:1.3rem}
+.shelf-heading span{font-size:.82rem;color:var(--muted);letter-spacing:.05em}
+.book{display:flex;gap:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden;box-shadow:0 2px 14px rgba(32,55,44,.07)}
+.book-cover{width:220px;min-height:300px;flex-shrink:0;background:var(--night);position:relative}
+.book-cover svg{display:block;width:100%;height:100%;position:absolute;inset:0}
+.book-body{padding:26px 28px 24px;flex:1;display:flex;flex-direction:column;gap:10px}
+.book-body .kicker{font-size:.78rem;letter-spacing:.22em;color:var(--sage)}
+.book-body h2{font-size:1.55rem;line-height:1.4}
+.book-body .hook{color:var(--ink-soft);font-size:.98rem}
+.book-body .skill{font-size:.85rem;color:var(--muted)}
+.book-body .skill b{color:var(--amber);font-weight:600;letter-spacing:.05em}
+.book-body .muted{font-size:.84rem;color:var(--muted)}
+.book-actions{margin-top:auto;padding-top:14px;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.shelf-note{margin-top:34px;color:var(--muted);font-size:.86rem;line-height:2;border-top:1px dashed var(--line-dark);padding-top:18px}
+
+/* ============ 按钮 ============ */
+.btn-primary{display:inline-flex;align-items:center;gap:8px;background:var(--terra);color:#fffdf6;border:none;border-radius:8px;padding:11px 22px;font-size:.95rem;letter-spacing:.08em;box-shadow:0 2px 8px rgba(182,92,73,.28)}
+.btn-primary:hover{background:var(--terra-deep)}
+.btn-primary:disabled{background:#c8b8ae;box-shadow:none;cursor:default}
+.btn-ghost{display:inline-flex;align-items:center;gap:8px;background:transparent;color:var(--ink-soft);border:1px solid var(--line-dark);border-radius:8px;padding:10px 20px;font-size:.92rem;letter-spacing:.06em}
+.btn-ghost:hover{border-color:var(--terra);color:var(--terra)}
+.btn-text{background:none;border:none;color:var(--sage);font-size:.88rem;text-decoration:underline;text-underline-offset:3px}
+.btn-text:hover{color:var(--terra)}
+
+/* ============ 阅读页 ============ */
+.reader-head{margin-bottom:6px}
+.reader-head .crumb{font-size:.8rem;letter-spacing:.24em;color:var(--terra);margin-bottom:8px}
+.reader-head h1{font-size:1.75rem;line-height:1.4;margin-bottom:12px}
+.meta-chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{font-family:var(--sans);font-size:.76rem;letter-spacing:.04em;color:var(--ink-soft);background:var(--sage-pale);border:1px solid var(--sage-line);border-radius:999px;padding:3px 12px}
+.chip.who{background:#f6ece6;border-color:#e4cfc2}
+
+.fig{border:1px solid var(--line);border-radius:10px;overflow:hidden;margin:6px 0 22px;box-shadow:0 2px 12px rgba(22,40,42,.10)}
+.fig svg{display:block;width:100%;height:auto}
+.fig .cap{display:flex;justify-content:space-between;gap:10px;font-family:var(--sans);font-size:.75rem;color:var(--muted);background:var(--panel);border-top:1px solid var(--line);padding:7px 14px;letter-spacing:.05em}
+
+.paras p{margin:0 0 1.15em;font-size:1.06rem;text-align:justify}
+.term{border:none;background:transparent;color:var(--amber);font:inherit;border-bottom:1px dashed var(--amber);padding:0 1px}
+.term:hover{color:var(--terra);border-color:var(--terra)}
+
+.clue{margin:22px 0;border:1px dashed var(--sage);background:var(--sage-pale);border-radius:10px;padding:14px 18px;display:flex;gap:14px;align-items:flex-start}
+.clue .tag{flex-shrink:0;font-family:var(--sans);font-size:.72rem;letter-spacing:.2em;color:#fff;background:var(--sage);border-radius:4px;padding:3px 8px;margin-top:4px}
+.clue .clue-title{font-weight:700;font-size:.98rem}
+.clue .clue-text{font-size:.9rem;color:var(--ink-soft)}
+
+.closing{margin:26px 0 8px;font-size:1.14rem;color:var(--terra-deep);font-weight:700;letter-spacing:.02em}
+.closing::before{content:"—— "}
+
+.note{margin:20px 0;border-top:1px solid var(--line);padding-top:8px}
+.note summary{font-family:var(--sans);font-size:.8rem;color:var(--muted);cursor:pointer;letter-spacing:.08em;list-style:none}
+.note summary::before{content:"▸ ";color:var(--line-dark)}
+.note[open] summary::before{content:"▾ "}
+.note .note-body{font-size:.85rem;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px 16px;margin-top:10px}
+
+/* ============ 推理题 ============ */
+.quiz{margin:26px 0;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--terra);border-radius:10px;padding:20px 22px;box-shadow:0 2px 10px rgba(32,55,44,.06)}
+.quiz .q-tag{font-family:var(--sans);font-size:.72rem;letter-spacing:.24em;color:var(--terra);margin-bottom:8px}
+.quiz .q-text{font-size:1.12rem;font-weight:700;margin-bottom:16px}
+.opt{display:block;width:100%;text-align:left;background:#fff;border:1px solid var(--line-dark);border-radius:8px;padding:12px 16px;margin-bottom:10px;font-size:.98rem;color:var(--ink);font-family:inherit;transition:border-color .15s,background .15s}
+.opt:hover:not(:disabled){border-color:var(--terra);background:#fdf6f1}
+.opt:disabled{cursor:default}
+.opt.wrong{border-color:#cdb9b0;background:#f9f1ec;color:#8a6a5c}
+.opt.wrong .opt-mark{color:var(--terra)}
+.opt.right{border-color:var(--sage);background:var(--sage-pale)}
+.opt .opt-mark{font-family:var(--sans);font-size:.78rem;margin-right:8px;color:var(--muted)}
+.opt-result{margin:6px 2px 14px;padding:12px 16px;border-radius:8px;font-size:.92rem;line-height:1.9}
+.opt-result.bad{background:#f9f1ec;border:1px dashed #d8b7a6;color:#6d554a}
+.opt-result.good{background:var(--sage-pale);border:1px dashed var(--sage);color:var(--ink-soft)}
+.opt-result .rt{font-weight:700;display:block;margin-bottom:4px;font-size:.85rem;letter-spacing:.12em;font-family:var(--sans)}
+.opt-result.bad .rt{color:var(--terra)}
+.opt-result.good .rt{color:var(--sage)}
+.opt-result .mini-clue{margin-top:8px;font-size:.85rem;color:var(--ink-soft)}
+.opt-result .mini-clue b{color:var(--sage)}
+.hint-row{display:flex;align-items:center;gap:12px;margin-top:4px}
+.hint-box{margin-top:10px;background:#fdf6e7;border:1px dashed var(--gold);border-radius:8px;padding:10px 16px;font-size:.9rem;color:#7a6234}
+.quiz-done-bar{margin-top:6px;display:flex;justify-content:flex-end}
+
+/* ============ 导航与进度 ============ */
+.progress{position:sticky;top:49px;z-index:15;background:rgba(246,245,239,.94);padding:10px 0 12px;margin-bottom:14px}
+.progress .bar{height:4px;background:var(--line);border-radius:99px;overflow:hidden}
+.progress .bar i{display:block;height:100%;background:var(--terra);border-radius:99px;transition:width .3s}
+.progress .plabel{margin-top:7px;font-family:var(--sans);font-size:.75rem;color:var(--muted);letter-spacing:.1em;display:flex;justify-content:space-between}
+.reader-nav{margin-top:34px;display:flex;justify-content:space-between;align-items:center;gap:12px;border-top:1px solid var(--line);padding-top:20px}
+
+/* ============ 结算页 ============ */
+.score-card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:34px 32px;box-shadow:0 3px 16px rgba(32,55,44,.08)}
+.score-card .kicker{font-size:.78rem;letter-spacing:.26em;color:var(--terra);margin-bottom:8px}
+.score-card h1{font-size:1.7rem;margin-bottom:6px}
+.score-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin:24px 0}
+.score-cell{border:1px solid var(--line);border-radius:10px;padding:14px 16px;background:#fff}
+.score-cell .num{font-size:1.7rem;font-weight:700;color:var(--terra-deep)}
+.score-cell .lab{font-family:var(--sans);font-size:.75rem;color:var(--muted);letter-spacing:.1em;margin-top:2px}
+.score-verdict{font-size:1.02rem;color:var(--ink-soft);border-left:3px solid var(--sage);padding-left:14px;margin:10px 0 20px}
+.quiz-review{margin:8px 0 20px}
+.quiz-review details{border:1px solid var(--line);border-radius:8px;margin-bottom:8px;background:#fff}
+.quiz-review summary{padding:10px 16px;font-size:.92rem;cursor:pointer;list-style:none}
+.quiz-review summary::before{content:"▸ ";color:var(--line-dark)}
+.quiz-review details[open] summary::before{content:"▾ "}
+.quiz-review .rv-body{padding:0 16px 12px;font-size:.86rem;color:var(--muted)}
+
+/* ============ 弹层：术语 ============ */
+.pop-mask{position:fixed;inset:0;background:rgba(32,55,44,.28);z-index:40;display:flex;align-items:center;justify-content:center;padding:20px}
+.pop{background:var(--panel);border:1px solid var(--line-dark);border-radius:12px;max-width:420px;width:100%;padding:24px 26px;box-shadow:0 10px 40px rgba(22,40,42,.25)}
+.pop h3{color:var(--amber);font-size:1.15rem;margin-bottom:8px}
+.pop p{font-size:.94rem;color:var(--ink-soft)}
+.pop .pop-close{margin-top:16px;text-align:right}
+
+footer.site{margin-top:50px;border-top:1px solid var(--line);padding-top:16px;font-family:var(--sans);font-size:.75rem;color:var(--muted);letter-spacing:.06em;display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+@media (max-width:640px){
+  .book{flex-direction:column}
+  .book-cover{width:100%;min-height:180px}
+  .hero h1{font-size:1.6rem}
+  .reader-head h1{font-size:1.4rem}
+  .wrap{padding:18px 14px 70px}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+"use strict";
+/* ================= 分镜插画（内联 SVG，统一夜色纸感配色） ================= */
+const SKY = `<defs><linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d3437"/><stop offset="1" stop-color="#0e1c1f"/></linearGradient></defs>`;
+const STARS = (()=>{ // 固定伪随机星点
+  let out="",s=7;
+  const rnd=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+  for(let i=0;i<46;i++){const x=(rnd()*700+10).toFixed(0),y=(rnd()*250+8).toFixed(0),r=(rnd()*1.5+.5).toFixed(1),o=(rnd()*.6+.25).toFixed(2);
+    out+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#dce9c9" opacity="${o}"/>`;}
+  return out;
+})();
+
+const FIG = {
+garden: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="花园里的望远镜">
+${SKY}<rect width="720" height="380" fill="url(#sky)"/>${STARS}
+<path d="M96 84 a34 34 0 1 0 22 56 a26 26 0 1 1 -22 -56z" fill="#e8dfc0" opacity=".9"/>
+<rect y="300" width="720" height="80" fill="#22332c"/>
+<path d="M0 300 h720" stroke="#315e4e" stroke-width="2" opacity=".5"/>
+<g stroke="#c9c2ae" stroke-width="6" stroke-linecap="round">
+<line x1="330" y1="310" x2="392" y2="238"/><line x1="392" y1="238" x2="430" y2="312"/><line x1="392" y1="238" x2="356" y2="312"/></g>
+<g transform="rotate(-32 392 226)">
+<rect x="322" y="212" width="180" height="26" rx="12" fill="#b65c49"/>
+<rect x="492" y="215" width="26" height="20" rx="6" fill="#8a4636"/>
+<rect x="308" y="216" width="18" height="18" rx="5" fill="#d7e0da"/></g>
+<circle cx="392" cy="226" r="10" fill="#20372c" stroke="#c9c2ae" stroke-width="3"/>
+<g fill="#16241f"><rect x="560" y="252" width="90" height="48"/><path d="M552 254 l52 -30 l52 30z"/></g>
+<rect x="598" y="266" width="14" height="20" fill="#e8dfc0" opacity=".8"/></svg>`,
+
+desk: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="摆满星表的书桌">
+<rect width="720" height="380" fill="#f1eddc"/>
+<rect y="0" width="720" height="380" fill="none"/>
+<g transform="rotate(-4 300 190)"><rect x="150" y="70" width="300" height="240" fill="#fffdf6" stroke="#c9c2ae"/>
+<g stroke="#d9d0b8" stroke-width="1">${[95,120,145,170,195,220,245,270].map(y=>`<line x1="170" y1="${y}" x2="430" y2="${y}"/>`).join("")}</g>
+<path d="M180 260 C 240 120 360 120 420 250" fill="none" stroke="#315e4e" stroke-width="2.5"/>
+<path d="M180 262 C 246 132 352 108 420 244" fill="none" stroke="#b65c49" stroke-width="2.5" stroke-dasharray="7 6"/>
+<circle cx="418" cy="247" r="5" fill="#b65c49"/><circle cx="180" cy="260" r="5" fill="#315e4e"/></g>
+<g transform="rotate(6 560 220)"><rect x="480" y="110" width="190" height="230" fill="#fffdf6" stroke="#c9c2ae"/>
+<g stroke="#d9d0b8" stroke-width="1">${[140,165,190,215,240,265,290,315].map(y=>`<line x1="496" y1="${y}" x2="654" y2="${y}"/>`).join("")}</g>
+<line x1="496" y1="152" x2="600" y2="152" stroke="#b65c49" stroke-width="3"/><line x1="496" y1="177" x2="632" y2="177" stroke="#315e4e" stroke-width="3"/></g>
+<g><rect x="70" y="240" width="26" height="52" rx="4" fill="#20372c"/><ellipse cx="83" cy="240" rx="15" ry="6" fill="#315e4e"/>
+<path d="M96 236 C 130 180 150 160 196 150 C 160 176 140 200 110 246z" fill="#e8dfc0" stroke="#c9c2ae"/></g>
+<ellipse cx="360" cy="352" rx="260" ry="10" fill="#e0d8bf" opacity=".6"/></svg>`,
+
+drift: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="星图上逐渐偏离的轨迹">
+${SKY}<rect width="720" height="380" fill="url(#sky)"/>
+<g stroke="#315e4e" stroke-width="1" opacity=".35">${[60,120,180,240,300].map(y=>`<line x1="0" y1="${y}" x2="720" y2="${y}"/>`).join("")}${[90,180,270,360,450,540,630].map(x=>`<line x1="${x}" y1="0" x2="${x}" y2="380"/>`).join("")}</g>
+${STARS}
+<path d="M80 300 C 240 250 420 210 640 180" fill="none" stroke="#87977a" stroke-width="2.5" stroke-dasharray="8 7"/>
+<g fill="#b65c49"><circle cx="80" cy="300" r="6"/><circle cx="240" cy="252" r="6"/><circle cx="400" cy="206" r="6"/><circle cx="520" cy="150" r="6"/><circle cx="640" cy="98" r="7"/></g>
+<g stroke="#b65c49" stroke-width="1.5" opacity=".8"><line x1="520" y1="150" x2="532" y2="172"/><line x1="640" y1="98" x2="650" y2="132"/></g>
+<circle cx="650" cy="132" r="4" fill="#e8dfc0"/><circle cx="532" cy="172" r="3.5" fill="#e8dfc0" opacity=".8"/>
+<text x="96" y="290" font-family="Georgia,serif" font-size="15" fill="#87977a">星表预测</text>
+<text x="556" y="90" font-family="Georgia,serif" font-size="15" fill="#b65c49">实际位置</text></svg>`,
+
+candle: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="烛光下的计算">
+${SKY}<rect width="720" height="380" fill="#101f22"/>
+<circle cx="560" cy="70" r="150" fill="#22372f" opacity=".7"/>
+<rect x="470" y="20" width="180" height="130" fill="#16282a" stroke="#315e4e" stroke-width="4"/>
+<line x1="560" y1="20" x2="560" y2="150" stroke="#315e4e" stroke-width="4"/><line x1="470" y1="85" x2="650" y2="85" stroke="#315e4e" stroke-width="4"/>
+<path d="M512 60 a18 18 0 1 0 12 30 a13 13 0 1 1 -12 -30z" fill="#e8dfc0"/>
+<rect y="290" width="720" height="90" fill="#2c2318"/>
+<g transform="rotate(-2 300 300)"><rect x="140" y="215" width="320" height="150" fill="#f4efdc" stroke="#c9c2ae"/>
+<g stroke="#8a8570" stroke-width="1.6" opacity=".85"><path d="M165 250 q30 -18 60 0 t60 0 t60 0 t60 0" fill="none"/><path d="M165 278 q30 -18 60 0 t60 0 t60 0 t60 0" fill="none"/><path d="M165 306 q30 -14 46 0 t52 0 t58 0" fill="none"/><circle cx="392" cy="316" r="16" fill="none"/><line x1="392" y1="316" x2="404" y2="304"/></g></g>
+<g><rect x="520" y="230" width="26" height="72" rx="3" fill="#e8dfc0"/><ellipse cx="533" cy="230" rx="13" ry="4" fill="#d9cfae"/>
+<path d="M533 196 C 524 214 524 224 533 232 C 542 224 542 214 533 196z" fill="#c8a55a"/><path d="M533 208 C 528 218 528 224 533 229 C 538 224 538 218 533 208z" fill="#f4e6b0"/>
+<circle cx="533" cy="216" r="60" fill="#c8a55a" opacity=".10"/><circle cx="533" cy="216" r="110" fill="#c8a55a" opacity=".05"/></g></svg>`,
+
+letters: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="两地之间的信件">
+<rect width="720" height="380" fill="#f1eddc"/>
+<g stroke="#c9c2ae" stroke-width="1" opacity=".6">${[50,110,170,230,290,350].map(y=>`<line x1="0" y1="${y}" x2="720" y2="${y}"/>`).join("")}</g>
+<circle cx="150" cy="120" r="9" fill="#315e4e"/><circle cx="330" cy="290" r="9" fill="#5c7b64"/><circle cx="590" cy="150" r="9" fill="#b65c49"/>
+<path d="M150 120 C 220 210 260 250 330 290" fill="none" stroke="#87977a" stroke-width="2.5" stroke-dasharray="7 7"/>
+<path d="M330 290 C 430 270 520 220 590 150" fill="none" stroke="#b65c49" stroke-width="2.5" stroke-dasharray="7 7"/>
+<g transform="rotate(-8 245 205)"><rect x="185" y="170" width="120" height="72" fill="#fffdf6" stroke="#a89f86"/><path d="M185 170 l60 42 l60 -42" fill="none" stroke="#a89f86"/><circle cx="245" cy="218" r="11" fill="#b65c49"/></g>
+<g transform="rotate(6 470 220)"><rect x="410" y="186" width="120" height="72" fill="#fffdf6" stroke="#a89f86"/><path d="M410 186 l60 42 l60 -42" fill="none" stroke="#a89f86"/><circle cx="470" cy="230" r="11" fill="#315e4e"/></g>
+<text x="118" y="100" font-family="Georgia,serif" font-size="16" fill="#315e4e">剑桥</text>
+<text x="296" y="330" font-family="Georgia,serif" font-size="16" fill="#5c7b64">格林尼治</text>
+<text x="576" y="130" font-family="Georgia,serif" font-size="16" fill="#b65c49">巴黎</text></svg>`,
+
+dome: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="天文台的圆顶">
+${SKY}<rect width="720" height="380" fill="url(#sky)"/>${STARS}
+<rect y="320" width="720" height="60" fill="#1a2b25"/>
+<path d="M260 320 a150 150 0 0 1 300 0z" fill="#315e4e"/>
+<path d="M260 320 a150 150 0 0 1 300 0z" fill="none" stroke="#c9c2ae" stroke-width="3"/>
+<path d="M410 172 a150 150 0 0 1 60 148 l-22 0 a128 128 0 0 0 -50 -126z" fill="#0e1c1f"/>
+<g transform="rotate(28 440 260)"><rect x="424" y="150" width="30" height="150" rx="12" fill="#b65c49"/><rect x="420" y="146" width="38" height="16" rx="6" fill="#8a4636"/></g>
+<rect x="150" y="290" width="80" height="30" fill="#22332c"/><rect x="600" y="296" width="60" height="24" fill="#22332c"/>
+<path d="M452 160 l30 -60" stroke="#e8dfc0" stroke-width="2" opacity=".35"/><path d="M452 160 l66 -30" stroke="#e8dfc0" stroke-width="2" opacity=".2"/></svg>`,
+
+twocharts: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="两晚星图的对照">
+<rect width="720" height="380" fill="#20372c"/>
+<g transform="rotate(-2 200 200)"><rect x="70" y="60" width="260" height="260" fill="#fffdf6" stroke="#c9c2ae"/>
+<g stroke="#d9d0b8">${[105,150,195,240,285].map(y=>`<line x1="86" y1="${y}" x2="314" y2="${y}"/>`).join("")}${[125,170,215,260].map(x=>`<line x1="${x}" y1="76" x2="${x}" y2="304"/>`).join("")}</g>
+<g fill="#4a5a50"><circle cx="120" cy="110" r="3"/><circle cx="180" cy="140" r="3"/><circle cx="250" cy="105" r="3"/><circle cx="290" cy="180" r="3"/><circle cx="140" cy="210" r="3"/><circle cx="230" cy="250" r="3"/><circle cx="280" cy="285" r="3"/><circle cx="105" cy="270" r="3"/><circle cx="200" cy="190" r="5" fill="#b65c49"/></g>
+<text x="86" y="340" font-family="Georgia,serif" font-size="15" fill="#d7e0da">8月4日</text></g>
+<g transform="rotate(2 510 200)"><rect x="390" y="60" width="260" height="260" fill="#fffdf6" stroke="#c9c2ae"/>
+<g stroke="#d9d0b8">${[105,150,195,240,285].map(y=>`<line x1="406" y1="${y}" x2="634" y2="${y}"/>`).join("")}${[445,490,535,580].map(x=>`<line x1="${x}" y1="76" x2="${x}" y2="304"/>`).join("")}</g>
+<g fill="#4a5a50"><circle cx="440" cy="110" r="3"/><circle cx="500" cy="140" r="3"/><circle cx="570" cy="105" r="3"/><circle cx="610" cy="180" r="3"/><circle cx="460" cy="210" r="3"/><circle cx="550" cy="250" r="3"/><circle cx="600" cy="285" r="3"/><circle cx="425" cy="270" r="3"/><circle cx="232" cy="190" r="0"/></g>
+<circle cx="520" cy="190" r="0" fill="none"/>
+<circle cx="540" cy="196" r="5" fill="#b65c49"/>
+<g stroke="#b65c49" stroke-width="2"><line x1="524" y1="188" x2="536" y2="194"/><path d="M524 188 l6 -1 M524 188 l1 6" /></g>
+<circle cx="522" cy="190" r="9" fill="none" stroke="#b65c49" stroke-dasharray="3 3"/>
+<text x="406" y="340" font-family="Georgia,serif" font-size="15" fill="#d7e0da">8月12日</text></g>
+<g stroke="#c8a55a" stroke-width="2.5" fill="none"><path d="M345 190 h30"/><path d="M368 182 l10 8 l-10 8"/></g></svg>`,
+
+berlin: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="柏林科学院的新星图">
+<rect width="720" height="380" fill="#f1eddc"/>
+<g transform="rotate(-1 360 195)"><rect x="120" y="40" width="480" height="310" fill="#fffdf6" stroke="#a89f86" stroke-width="2"/>
+<g stroke="#d9d0b8">${[90,140,190,240,290].map(y=>`<line x1="140" y1="${y}" x2="580" y2="${y}"/>`).join("")}${[200,280,360,440,520].map(x=>`<line x1="${x}" y1="60" x2="${x}" y2="330"/>`).join("")}</g>
+<g fill="#4a5a50">${[[170,80],[210,120],[260,95],[300,150],[350,110],[400,85],[460,130],[520,100],[560,160],[180,180],[240,210],[320,190],[380,230],[450,200],[540,250],[200,270],[280,300],[360,280],[430,310],[510,290],[160,310],[560,320],[300,250],[490,170]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.6"/>`).join("")}</g>
+<circle cx="352" cy="168" r="14" fill="none" stroke="#b65c49" stroke-width="2.5"/>
+<circle cx="352" cy="168" r="3.5" fill="#b65c49"/>
+<text x="150" y="368" font-family="Georgia,serif" font-size="15" fill="#7c8a7f">柏林科学院星图 · 第21时区</text>
+<circle cx="352" cy="168" r="26" fill="none" stroke="#b65c49" stroke-width="1" stroke-dasharray="4 4"/></g>
+<g transform="rotate(8 640 90)"><rect x="596" y="52" width="88" height="56" fill="#fffdf6" stroke="#a89f86"/><path d="M596 52 l44 32 l44 -32" fill="none" stroke="#a89f86"/><circle cx="640" cy="88" r="8" fill="#b65c49"/></g></svg>`,
+
+eyepiece: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="目镜视场">
+<rect width="720" height="380" fill="#0b1618"/>
+<circle cx="360" cy="190" r="160" fill="#101f22" stroke="#315e4e" stroke-width="5"/>
+<g clip-path="circle(160px at 360px 190px)">${STARS}
+<g fill="#dce9c9"><circle cx="290" cy="130" r="2.5"/><circle cx="430" cy="110" r="2"/><circle cx="330" cy="240" r="2.5"/><circle cx="450" cy="250" r="2"/><circle cx="260" cy="200" r="2"/><circle cx="410" cy="300" r="2.5"/><circle cx="310" cy="90" r="2"/></g>
+<circle cx="392" cy="176" r="7" fill="#9fc3c0"/><circle cx="392" cy="176" r="12" fill="none" stroke="#b65c49" stroke-width="2"/>
+<g stroke="#5c7b64" stroke-width="1.2" opacity=".8"><line x1="360" y1="40" x2="360" y2="150"/><line x1="360" y1="230" x2="360" y2="340"/><line x1="210" y1="190" x2="320" y2="190"/><line x1="400" y1="190" x2="510" y2="190"/></g>
+<circle cx="360" cy="190" r="5" fill="none" stroke="#5c7b64"/></g>
+<text x="420" y="160" font-family="Georgia,serif" font-size="15" fill="#b65c49">图上没有这颗</text>
+<path d="M418 164 l-14 8" stroke="#b65c49" stroke-width="1.5"/>
+<text x="60" y="352" font-family="Georgia,serif" font-size="14" fill="#5c7b64">1846年9月23日 · 柏林天文台</text></svg>`,
+
+orbit: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="预测与真实的轨道">
+${SKY}<rect width="720" height="380" fill="url(#sky)"/>${STARS}
+<circle cx="150" cy="200" r="16" fill="#c8a55a"/><circle cx="150" cy="200" r="26" fill="none" stroke="#c8a55a" opacity=".3"/>
+<ellipse cx="150" cy="200" rx="190" ry="130" fill="none" stroke="#5c7b64" stroke-width="2.5"/>
+<ellipse cx="150" cy="200" rx="300" ry="200" fill="none" stroke="#87977a" stroke-width="2" stroke-dasharray="8 7"/>
+<ellipse cx="150" cy="200" rx="255" ry="170" fill="none" stroke="#b65c49" stroke-width="2.5"/>
+<circle cx="338" cy="148" r="7" fill="#5c7b64"/>
+<circle cx="404" cy="120" r="8" fill="#9fc3c0"/>
+<circle cx="448" cy="96" r="6" fill="none" stroke="#b65c49" stroke-width="2.5"/>
+<g stroke="#b65c49" stroke-width="1.5"><line x1="404" y1="120" x2="448" y2="96"/></g>
+<text x="344" y="170" font-family="Georgia,serif" font-size="14" fill="#87977a">天王星</text>
+<text x="368" y="150" font-family="Georgia,serif" font-size="14" fill="#9fc3c0">真实位置</text>
+<text x="452" y="84" font-family="Georgia,serif" font-size="14" fill="#b65c49">预测位置</text>
+<text x="60" y="352" font-family="Georgia,serif" font-size="14" fill="#5c7b64">方向对了，距离借来的尺子量错了</text></svg>`,
+
+quill: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="命名与书信">
+<rect width="720" height="380" fill="#f1eddc"/>
+<g transform="rotate(-3 250 190)"><rect x="130" y="80" width="240" height="220" fill="#fffdf6" stroke="#c9c2ae"/>
+<g stroke="#d9d0b8">${[120,150,180,210,240,270].map(y=>`<line x1="155" y1="${y}" x2="345" y2="${y}"/>`).join("")}</g>
+<path d="M160 132 q40 -20 80 0 t100 0" stroke="#8a8570" fill="none" stroke-width="1.6"/>
+<text x="160" y="116" font-family="Georgia,serif" font-size="22" fill="#20372c" font-style="italic">Neptunus</text></g>
+<g><rect x="470" y="240" width="30" height="60" rx="4" fill="#20372c"/><ellipse cx="485" cy="240" rx="17" ry="7" fill="#315e4e"/>
+<path d="M500 236 C 545 170 575 140 640 128 C 590 165 560 200 516 250z" fill="#e8dfc0" stroke="#c9c2ae"/></g>
+<g transform="rotate(7 560 320)"><rect x="500" y="292" width="120" height="66" fill="#fffdf6" stroke="#a89f86"/><path d="M500 292 l60 38 l60 -38" fill="none" stroke="#a89f86"/><circle cx="560" cy="334" r="10" fill="#b65c49"/></g>
+<g transform="rotate(-9 120 330)"><rect x="60" y="300" width="120" height="66" fill="#fffdf6" stroke="#a89f86"/><path d="M60 300 l60 38 l60 -38" fill="none" stroke="#a89f86"/><circle cx="120" cy="342" r="10" fill="#315e4e"/></g></svg>`,
+
+neptune: `<svg viewBox="0 0 720 380" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="深空中的海王星">
+${SKY}<rect width="720" height="380" fill="url(#sky)"/>${STARS}
+<circle cx="90" cy="90" r="10" fill="#c8a55a"/><circle cx="90" cy="90" r="24" fill="none" stroke="#c8a55a" opacity=".35"/>
+<defs><radialGradient id="np" cx=".38" cy=".34" r=".9"><stop offset="0" stop-color="#bcd8d3"/><stop offset=".55" stop-color="#6f9a94"/><stop offset="1" stop-color="#2c4a48"/></radialGradient></defs>
+<circle cx="500" cy="200" r="86" fill="url(#np)"/>
+<path d="M424 176 a86 86 0 0 1 152 -6" fill="none" stroke="#dce9c9" stroke-width="3" opacity=".35"/>
+<path d="M430 236 a86 86 0 0 0 140 4" fill="none" stroke="#16282a" stroke-width="5" opacity=".4"/>
+<circle cx="620" cy="110" r="3" fill="#dce9c9"/><circle cx="640" cy="290" r="2.5" fill="#dce9c9" opacity=".8"/>
+<text x="60" y="340" font-family="Georgia,serif" font-size="15" fill="#5c7b64">它在那里。一直都在那里。</text></svg>`
+};
+/* ================= 故事数据：笔尖上的行星 ================= */
+const TERMS = [
+ {id:"bode", term:"波得定则", meaning:"一条 18 世纪流行的经验规律：用一串数列近似描述各行星的轨道半径。它对天王星大致成立，却没有物理依据。海王星的真实距离并不符合它——正是这把“借来的尺子”让两位计算者的轨道参数明显失真。"},
+ {id:"arcmin", term:"角分", meaning:"角度的单位，1 度等于 60 角分。满月的宽度约 30 角分。1845 年天王星偏离星表约 2 角分——在天空里只是极细的一道缝，却足以撬动整个太阳系模型。"},
+ {id:"starchart", term:"星图", meaning:"把某一天区的恒星位置画在纸上的图。要在满天恒星里找一颗新来的行星，最快的办法不是记住每颗星，而是有一张足够新的图可以对照。"},
+ {id:"perturb", term:"摄动", meaning:"一颗行星在太阳引力之外，受到其他行星引力拉扯而产生的轨道偏离。天王星的异常，就是一次找不到来源的摄动。"},
+ {id:"elements", term:"轨道根数", meaning:"完整描述一条轨道所需的一组参数：大小、形状、朝向、行星的位置。两个互不相识的人算出的根数若指向同一片天空，巧合就很难解释。"},
+ {id:"mag8", term:"视星等", meaning:"衡量天体亮度的等级，数字越大越暗。海王星约为 8 等，肉眼无法看见——它只存在于望远镜的视场里。"}
+];
+
+const STORY = {
+ id:"neptune-pen",
+ title:"笔尖上的行星",
+ subtitle:"海王星发现之谜",
+ tagline:"一颗没人见过的行星，是先从纸上算出来的。顺着天王星偏离星表的那道细缝，找出它藏身的方向。",
+ skill:"对照 · 追问前提 · 证据链",
+ stages:"四章 · 十二页 · 六处推理",
+ scenes:[
+ {
+  id:"s01", chapter:"第一章 · 合不上拍的表", title:"夜空里的不速之客",
+  date:"1781年3月13日", place:"英国 · 巴斯", people:["威廉·赫歇尔"],
+  fig:"garden", figCap:"图 01 · 花园里的七英尺望远镜",
+  paras:[
+   "赫歇尔的职业是音乐家，观天是业余。他用自己磨制的望远镜，一颗星一颗星地巡视夜空，想把双星挑出来。",
+   "这个晚上，目镜里出现了一颗不对劲的星：别的星只是一个光点，它却带一个隐约的小圆面。接连几晚再看，它在星空中挪动——恒星从不这样。",
+   "他谨慎地按一颗彗星报告了它。但各地天文学家怎么也算不出它的彗星轨道，反倒算出一条近乎正圆的行星轨道。",
+   "太阳系从来被认为到土星为止。这一夜之后，边界向外挪了一倍。新行星被命名为天王星——而人们很快发现，给一颗新行星编一张准确的表，远没有想象中容易。"
+  ],
+  clue:{title:"会移动的圆点", text:"恒星彼此之间的位置千万年不变。会在星空中挪动的，是属于太阳系的东西。"},
+  closing:"故事本该到此结束：一颗新行星，一条新轨道，一张新表。",
+  note:"赫歇尔起初按彗星报告了这一天体；马斯基林与莱克塞尔先后指出其轨道更像行星。此处按常见叙述作了压缩。"
+ },
+ {
+  id:"s02", chapter:"第一章 · 合不上拍的表", title:"一张表装不下两种记录",
+  date:"1821年", place:"法国 · 巴黎", people:["亚历克西·布瓦尔"],
+  fig:"desk", figCap:"图 02 · 合不进同一条椭圆的两种记录",
+  paras:[
+   "四十年后，巴黎天文台的布瓦尔着手编制天王星表。他手上的材料有两批：发现之前，1750 年以来观测者无意中把它当恒星记下的旧位置；发现之后，四十年的新观测。",
+   "麻烦来了：旧记录和新记录，怎么都合不进同一条椭圆。迁就旧的，新的对不上；迁就新的，旧的全军覆没。",
+   "布瓦尔最终按新观测发表了星表。但他没有把矛盾悄悄抹掉——在前言里，他把两种记录合不上拍这件事，原原本本地写了下来。",
+   "这张表当时相当精确。可是，被留在纸面上的那个裂缝，并没有打算消失。"
+  ],
+  quiz:{
+   q:"新旧记录合不上，布瓦尔该怎么处理这批旧数据？",
+   tag:"推理 01 · 对待证据",
+   hint:"想想：删掉数据之后，矛盾是解决了，还是只是看不见了？",
+   options:[
+    {id:"delete", label:"把旧观测从记录里删去，只留干净的表",
+     result:["表会干净很多——但矛盾并没有被解决，只是被藏了起来。那些被多位观测者独立记下的旧位置，仍然存在于某处的观测日志里。","以结论挑选证据，等于让证据失去反驳结论的权利。"],
+     clue:{title:"证据不能为结论让路", text:"删掉的异常不会消失，它只会在你看不见的地方继续存在。"}, tag:"对待证据"},
+    {id:"publish", label:"按新观测发表星表，同时公开承认存在未解的矛盾",
+     result:["这正是布瓦尔做的：用最好的数据编表，把合不上拍的事如实写进前言。","表暂时可用，裂缝留在明处——后来的人才知道该从哪里接下去查。"],
+     clue:{title:"诚实的空白", text:"承认一处没解决的矛盾，是给后来的调查者留下路标。"}, tag:"留下矛盾"},
+    {id:"dismiss", label:"认定旧观测全是粗心的错误，不必再查",
+     result:["旧位置出自不同年份、不同观测者、不同仪器。要说它们全部出错，需要证据，而不是一句“粗心”。","“全是错误”本身也是一个有待检验的说法，不能当作结论。"],
+     clue:{title:"结论也要证据", text:"宣称别人错了，和宣称自己对了一样，都要拿出依据。"}, tag:"追问前提"}
+   ],
+   answer:"publish"
+  },
+  clue:{title:"留在纸上的裂缝", text:"一张装不下所有记录的表，本身就是一条线索：要么记录有错，要么轨道有假。"},
+  closing:"接下来的二十年，这道裂缝越长越大。",
+  note:"布瓦尔在 1821 年星表前言中确实记录了新旧观测无法调和。他并未提出未知行星假说；本页的抉择场景是为教学设计的重述。"
+ },
+ {
+  id:"s03", chapter:"第一章 · 合不上拍的表", title:"越拉越长的裂缝",
+  date:"1830—1845年", place:"欧洲各天文台", people:["乔治·艾里"],
+  fig:"drift", figCap:"图 03 · 预测轨迹与实际位置",
+  paras:[
+   "天王星没有打算回到表上。一年一年，它的位置偏离星表越来越多。到 1845 年，偏差达到约 2 角分——听起来微小，但在精密天文测量里，这等于有人在眼前大声敲门。",
+   "观测来自多家天文台、多架仪器、多代观测者，而且偏出的方向稳定一致。它不像随机的手误，更像一个稳定存在的来源。",
+   "解释被一一摆上台面：观测者的系统性错误？引力定律在这么远的距离上失效？还是——在天王星之外，还有一颗没人见过的行星，正在用自己的引力拉扯它？",
+   "皇家天文学家艾里态度谨慎。解释可以有很多个，但调查的时间和精力是有限的：先追哪一个？"
+  ],
+  quiz:{
+   q:"一排解释里，哪一个最值得先投入追查？",
+   tag:"推理 02 · 提出可查的办法",
+   hint:"好假说有一个标志：它能告诉你，接下来去哪里看。",
+   options:[
+    {id:"gravity", label:"引力定律在遥远距离上失效",
+     result:["当时确实有人这样想。但“失效”怎么个失效法？修成什么样？它给不出一个可以指向天空的检验。","在它变得具体之前，这条解释没法被证实，也没法被否定——调查会停在这里。"],
+     clue:{title:"不能检验的解释是死路", text:"一个解释若不能产生可供核对的预测，就先别为它花掉整个夜晚。"}, tag:"提出可查的办法"},
+    {id:"error", label:"所有观测者年复一年犯同一种错误",
+     result:["多家天文台、多架仪器、多位观测者，要让他们以同样的方式一起出错，需要一个机制：什么共同的原因？","这条解释要成立，本身就需要非常强的证据——目前没有。"],
+     clue:{title:"同步出错需要解释", text:"“大家都错了”是一个需要论证的强断言，不是一个省事的出口。"}, tag:"追问前提"},
+    {id:"planet", label:"存在一颗未知行星，正在拉扯天王星",
+     result:["这个假说最可贵之处，是它能变成一道可以动手计算的题：什么样的行星、在哪里，才拉得出这样的偏差？","一旦算出来，预测就能被检验——把望远镜指过去，看那里有没有。"],
+     clue:{title:"能指路的假说", text:"好假说会告诉你去哪里看。剩下的交给夜空。"}, tag:"提出可查的办法"}
+   ],
+   answer:"planet"
+  },
+  clue:{title:"异常常是指路牌", text:"观测与理论的裂缝，有时不是错误，而是还没被发现的东西在说话。"},
+  closing:"可是“那里有一颗行星”只是半句话。它在哪里？",
+  note:"艾里等人确曾考虑过引力定律需要修正的可能；关于各项解释被讨论的先后，此页作了教学性压缩。"
+ },
+ {
+  id:"s04", chapter:"第二章 · 纸上的行星", title:"剑桥的逆题",
+  date:"1843—1845年", place:"英国 · 剑桥", people:["约翰·柯西·亚当斯"],
+  fig:"candle", figCap:"图 04 · 一道反着做的题",
+  paras:[
+   "正着算，人人会：已知一颗行星的轨道，算它怎样拉动天王星。剑桥刚毕业两年的亚当斯要反着做——从天王星的偏差，反推出那颗未知行星在哪里。",
+   "未知数太多：那颗行星的质量、距离、轨道的形状和朝向，全都没有着落。他只好先借一把尺子：按当时流行的波得定则，假定它在约 38 个天文单位之外，再对照偏差一轮一轮地修正。",
+   "1843 年到 1845 年，他把这道题算了又算。到 1845 年秋，答案落在纸上了：那个方向，黄经约 325° 附近，应该有一颗行星。",
+   "通过中间人，预测被送到皇家天文学家艾里的桌上。艾里回了信，信中追问了一个亚当斯没有算过的量。纸上的行星，停在了信纸之间。"
+  ],
+  clue:{title:"先借一把尺子", text:"数据不够时，可以借用一条假定往前走——但必须记得，回头要检验这把尺子本身。"},
+  closing:"对方追问的那个量，亚当斯还没有算。",
+  note:"亚当斯实际计算了多轮解；艾里追问的是关于径向距离的疑问。往来经过比此页所述更为曲折。"
+ },
+ {
+  id:"s05", chapter:"第二章 · 纸上的行星", title:"没有回音的信",
+  date:"1845年秋—1846年夏", place:"剑桥 ↔ 格林尼治", people:["约翰·柯西·亚当斯","乔治·艾里"],
+  fig:"letters", figCap:"图 05 · 停在信纸之间的预测",
+  paras:[
+   "亚当斯两度造访格林尼治，都没能见到艾里。留下的信里写着预测的位置；艾里的回信里写着追问。",
+   "然后，往来停住了。亚当斯没有补算那个被追问的量再寄回去；艾里也没有安排望远镜去搜那片天空。",
+   "在格林尼治看来，一个无名年轻人的纸上结果，还排不进望远镜的时间表。在剑桥看来，问题已经答完了。",
+   "一份完整的预测，就这样躺在抽屉里，等来了它的竞争对手。"
+  ],
+  quiz:{
+   q:"艾里追问了一个亚当斯没算过的量。亚当斯下一步最该做什么？",
+   tag:"推理 03 · 补上缺口",
+   hint:"证据链有一个特点：它最弱的一环，决定整条链的强度。",
+   options:[
+    {id:"wait", label:"结果已经足够好，等艾里自己想通",
+     result:["对方提出的疑点悬在那里，证据链就断了一环。等待不会让断口自己接上。","一份没人被说服的预测，和没有预测，效果是一样的——后来的历史恰好演示了这一点。"],
+     clue:{title:"疑点不答，链条不接", text:"说服不是屈服，是把证据链补到对方无法再摇头。"}, tag:"补上缺口"},
+    {id:"complete", label:"补算被追问的那个量，把完整结果再寄去",
+     result:["这正是当时缺掉的一步：补上缺口，让预测没有任何悬而未决的地方。","科学里，回答追问不是示弱，是把链条上最弱的一环换成最硬的。"],
+     clue:{title:"证据链要一环不缺", text:"一个没有被回应的疑问，就是整条链断掉的地方。"}, tag:"补上缺口"},
+    {id:"announce", label:"绕过艾里，直接向学界宣布发现新行星",
+     result:["没有望远镜指向那个方向，“发现”只是一句声称。行星不是靠宣布进入太阳系的。","宣布无法代替观测——这一步省不掉。"],
+     clue:{title:"声称不是证据", text:"宣布一件事，与证明一件事，中间隔着一整个望远镜。"}, tag:"证据链"}
+   ],
+   answer:"complete"
+  },
+  clue:{title:"停在抽屉里的行星", text:"预测躺在抽屉里的时候，它与不存在没有区别。"},
+  closing:"同一道题，海峡对岸也有人拿起了笔。",
+  note:"亚当斯 1845 年秋两度造访格林尼治未果；书信往来的具体细节比本页所述复杂，此处按科学史通行叙述简化。"
+ },
+ {
+  id:"s06", chapter:"第二章 · 纸上的行星", title:"巴黎的答案，剑桥的迟疑",
+  date:"1846年6月", place:"法国 · 巴黎", people:["于尔班·勒维耶","乔治·艾里","詹姆斯·查利斯"],
+  fig:"dome", figCap:"图 06 · 悄悄开始的搜寻",
+  paras:[
+   "巴黎的勒维耶不知道亚当斯。他从另一头把同一道题做了一遍：分析天王星的偏差，一步步锁定那个未知来源。1846 年 6 月，他公开发表了计算结果。",
+   "艾里读到论文时吃了一惊：勒维耶指出的位置，与九个月前躺在抽屉里的那份预测，相差不到 1 度。两个互不相识的人，两支队伍，两支笔，指向了天空的同一块地方。",
+   "这回艾里行动了。他请剑桥天文台的查利斯悄悄展开搜寻——没有声张，优先权的心思藏在安静里。",
+   "但剑桥手头没有那片天区的新星图。查利斯只能用最笨的办法：把视场里的星一颗一颗画下来，准备日后再逐一核对。搜寻持续了整个夏天。"
+  ],
+  clue:{title:"不约而同", text:"两条互不相干的路指向同一点，比任何单独一条都更像线索。"},
+  closing:"答案其实已经从查利斯的望远镜前走了过去——两次。",
+  note:"勒维耶 1846 年 6 月 1 日发表论文给出位置；艾里 7 月启动剑桥搜寻。优先权的考量见诸后世史料。"
+ }
+]
+};
+/* ================= 故事数据：第七至十二页 ================= */
+STORY.scenes.push(
+ {
+  id:"s07", chapter:"第二章 · 纸上的行星", title:"两次从眼前走过",
+  date:"1846年8月", place:"英国 · 剑桥", people:["詹姆斯·查利斯"],
+  fig:"twocharts", figCap:"图 07 · 两晚的记录，缺一次对照",
+  paras:[
+   "查利斯的办法不能说错：把同一天区连画几晚，事后对照哪颗星挪了位置——会动的那个，就是行星。",
+   "8 月 4 日，他记下了一批恒星的位置。8 月 12 日，又记下了一批。那颗行星两晚都在他的视场里，两次被写进了记录。",
+   "可是事后逐星核对的工作太繁琐，被一拖再拖。记录躺在日志里，没有人把那两页并排摆到一起。",
+   "剑桥的搜寻就这样持续着。近在咫尺的答案，隔着一次没有做的对照。"
+  ],
+  quiz:{
+   q:"要从满天恒星里认出那颗“会走”的行星，关键的一步是什么？",
+   tag:"推理 04 · 对照",
+   hint:"行星和恒星的区别，不在长什么样。",
+   options:[
+    {id:"bright", label:"先找最亮的那颗——行星应该显眼",
+     result:["海王星只有 8 等，比肉眼可见的极限还要暗十几倍。在那个视场里，它毫不显眼。","亮度不是区分行星与恒星的可靠线索——暗星多的是。"],
+     clue:{title:"澄清问题", text:"要找的对象先想清楚：它暗、它小、它唯一的特征是——它会动。"}, tag:"澄清问题"},
+    {id:"compare", label:"把同一区域连看两晚，对照哪个点挪了位置",
+     result:["恒星彼此不动，行星会在星空中挪步。两晚的记录一并排，会动的那个点自己跳出来。","这正是查利斯计划好、却没有及时做的那一步。"],
+     clue:{title:"动与不动", text:"区别行星与恒星，不靠看它什么样，靠看它动不动。"}, tag:"对照"},
+    {id:"color", label:"找颜色最特别的那颗",
+     result:["在当时的望远镜和记录方式下，微弱的星光根本分不出可靠的颜色差别。","这条路选取了一个仪器给不出的特征。"],
+     clue:{title:"对照工具", text:"选的特征，得先确认手里的工具量得出它。"}, tag:"对照工具"}
+   ],
+   answer:"compare"
+  },
+  clue:{title:"没并排的两页纸", text:"数据收齐了不等于发现了什么——发现发生在对照的那一刻。"},
+  closing:"剑桥的夏天过去了。9 月，一封信越过海峡，寄到柏林。",
+  note:"查利斯事后从记录中确认 8 月 4 日与 12 日两次观测到了海王星；未做核对确有记载。本页问答为教学设计。"
+ },
+ {
+  id:"s08", chapter:"第三章 · 九月二十三日", title:"柏林的星图",
+  date:"1846年9月23日", place:"德国 · 柏林天文台", people:["于尔班·勒维耶","约翰·伽勒","海因里希·达雷斯特"],
+  fig:"berlin", figCap:"图 08 · 柏林科学院第 21 时区星图",
+  paras:[
+   "8 月 31 日，勒维耶发表了最终的轨道计算。巴黎天文台对搜寻没有兴趣，他便把信寄往柏林，收件人是天文学家伽勒。",
+   "信里的话直接得惊人：把望远镜指向黄经 326° 附近，您将在离预测位置不远的地方，发现一颗带圆面的新行星。",
+   "信 9 月 23 日送到。当晚正逢天文台台长生日，伽勒获准使用那架 9 英寸折射望远镜。年轻的学生达雷斯特提了一个关键的建议：柏林科学院刚绘好、还没正式出版的第 21 时区星图，正好覆盖那片天区。",
+   "剑桥缺一整套新星图，柏林恰好有。对照的底图，就放在手边。"
+  ],
+  clue:{title:"先有地图，再找路", text:"对照要有一张足够新的底图。工具，有时就是胜负手。"},
+  closing:"天黑下来。望远镜转向信上写的那片星空。",
+  note:"达雷斯特提议使用布雷米克绘制的柏林科学院星图第 21 时区，是当夜发现的关键一环；此事有当事人的回忆支持。"
+ },
+ {
+  id:"s09", chapter:"第三章 · 九月二十三日", title:"不在图上的那颗星",
+  date:"1846年9月23日夜", place:"德国 · 柏林天文台", people:["约翰·伽勒","海因里希·达雷斯特"],
+  fig:"eyepiece", figCap:"图 09 · 目镜视场：图上没有的那颗",
+  paras:[
+   "分工很简单：伽勒守在目镜前，把看到的恒星一颗一颗报出来；达雷斯特坐在灯下，在星图上逐一核对。",
+   "“图上有没有？”“有。”——“这颗呢？”“有。”——午夜刚过，一颗 8 等暗星的位置被报出来。达雷斯特的手指停在图纸的空白处。",
+   "“那颗星不在图上。”",
+   "它离勒维耶信上写的位置，不到 1 度。第二天夜里再看，它已经挪动了一点。从动笔到找到，这道题的验证只花了一个晚上。"
+  ],
+  quiz:{
+   q:"镜筒里这颗不在图上的暗星，要怎样才算真正“确认”了它？",
+   tag:"推理 05 · 证据链",
+   hint:"一条证据可能是巧合，两条独立的证据合上，就很难是了。",
+   options:[
+    {id:"two", label:"它在预测位置附近、又不在星图上——再观测第二晚，确认它会移动",
+     result:["位置与预测吻合，是一条证据；星图上查无此星，是第二条；隔夜的移动，补上第三条。","三条独立的证据指向同一个结论——假想至此有了实体。"],
+     clue:{title:"证据链", text:"位置、图缺、移动：三条独立的线，在同一个点上打了个结。"}, tag:"证据链"},
+    {id:"blue", label:"它看起来比周围的星更蓝一些",
+     result:["颜色在这架望远镜、这个亮度下，是不可靠的特征；何况颜色与“是不是那颗行星”没有因果关系。","抓错了特征，看得再久也得不出结论。"],
+     clue:{title:"无关特征", text:"先问这个特征与结论有没有关系，再问仪器量不量得出它。"}, tag:"澄清问题"},
+    {id:"saw", label:"在场的伽勒和达雷斯特两个人都看见了它",
+     result:["两个人看见的，仍然只是“那里有一颗暗星”。星图上没有的暗星，可能是一次绘图疏漏。","确认身份靠的不是人头数，是它与预测、与移动之间的咬合。"],
+     clue:{title:"澄清问题", text:"“看见一颗星”与“找到那颗行星”，是两件事。"}, tag:"澄清问题"}
+   ],
+   answer:"two"
+  },
+  clue:{title:"三条线打一个结", text:"单独的每条线索都可能是巧合；几条独立的线索在同一处汇合，巧合就撑不住了。"},
+  closing:"伽勒后来写道：那晚之后，那片安静的星空，看上去再也不一样了。",
+  note:"发现位置距勒维耶预测约 52 角分；次夜复测确认了移动。伽勒的感慨见其事后书信，此处为意译。"
+ },
+ {
+  id:"s10", chapter:"第三章 · 九月二十三日", title:"命中，但没有全中",
+  date:"1846年秋", place:"欧洲", people:["约翰·柯西·亚当斯","于尔班·勒维耶"],
+  fig:"orbit", figCap:"图 10 · 预测与真实的轨道",
+  paras:[
+   "狂欢过后，人们把新行星的真实轨道算了出来，然后倒吸一口气：它与两位计算者的答案相去甚远。",
+   "两个人都借用了波得定则，假定行星在约 38 个天文单位之外；真实的距离只有约 30。由此推出的轨道大小、形状、周期，错得不是一点。",
+   "真正对上的，是那一段时期里行星所在的方向。若早几十年或晚几十年，同样的错误假定会把预测指到别处去——这一次，运气补上了假定与真实之间的差额。",
+   "铅笔赢了，但赢得不像传说中那样干净。这笔账，值得一项一项分开清点。"
+  ],
+  quiz:{
+   q:"预测命中了方向，算出的轨道却错得不少。这次成功说明了什么？",
+   tag:"推理 06 · 分清方法与运气",
+   hint:"把“哪些靠方法、哪些靠运气”分开清点，比欢呼更有用。",
+   options:[
+    {id:"allright", label:"既然命中，说明计算每一步都是对的",
+     result:["真实轨道与两份计算明显不同——“每一步都对”与记录不符。","用结果的正确反推过程的全部正确，会让我们学不到任何东西。"],
+     clue:{title:"诚实核对", text:"命中之后仍要逐项对账：对的是哪部分，错的是哪部分。"}, tag:"诚实核对"},
+    {id:"luck", label:"纯属走运，这套方法没有什么价值",
+     result:["从偏差反推位置、再把望远镜指过去——方向确实是方法给的，不是骰子掷出来的。","全盘否定与全盘接受犯了同一个错：拒绝把方法与运气分开清点。"],
+     clue:{title:"追问前提", text:"否定一切前，先问：方向上的命中，运气独自解释得了吗？"}, tag:"追问前提"},
+    {id:"split", label:"思路成立，借用的假定有误差，运气补上了差额",
+     result:["这正是后世科学史家的结论：从异常反推未知天体的方法成立；波得定则这把借来的尺子量错了；那段时间的位置巧合补上了差额。","把成功拆开清点，下一次才知道该改进哪一环。"],
+     clue:{title:"方法与运气分开记账", text:"命中不等于全对。拆开清点之后，方法才能真正传给下一个人。"}, tag:"分清方法与运气"}
+   ],
+   answer:"split"
+  },
+  clue:{title:"命中不等于全对", text:"一个成功的结果里，可能混着错误的假定。对账，是对成功最好的尊重。"},
+  closing:"清点完这笔账，剩下的是一个更热闹的问题：荣誉归谁？",
+  note:"预测方向在当时属部分巧合，是现代科学史研究的常见结论；此页按该观点叙述。"
+ },
+ {
+  id:"s11", chapter:"第四章 · 回响", title:"一颗行星的名字",
+  date:"1846—1847年", place:"伦敦与巴黎之间", people:["英国皇家天文学会","巴黎科学院"],
+  fig:"quill", figCap:"图 11 · 命名与书信往来",
+  paras:[
+   "发现公布之后，英国人才翻出亚当斯躺了一年的计算：原来剑桥早就摸到了门边。两国舆论为优先权争执了好几年。",
+   "命名也争。法国人一度要叫它“勒维耶星”，有人建议沿用发现者的名字；最终，神话占了上风——尼普顿，手持三叉戟的海神，海王星。",
+   "今天通行的记账方式是：亚当斯与勒维耶并列为计算上的发现者，伽勒与达雷斯特是那夜把望远镜指过去的人。",
+   "这个问题没有标准答案——你当时在场的话，会把荣誉记给谁？"
+  ],
+  opinion:{
+   q:"这颗行星的名字旁边，你最想写下谁？",
+   tag:"留下你的倾向 · 不计分",
+   options:[
+    {id:"adams", label:"亚当斯——第一个算出来的人"},
+    {id:"leverrier", label:"勒维耶——第一个公布并促成搜寻的人"},
+    {id:"galle", label:"伽勒与达雷斯特——第一双看见它的眼睛"},
+    {id:"all", label:"记不清楚也没关系——这正是科学的样子"}
+   ]
+  },
+  clue:{title:"荣誉的账本", text:"算出、公布、看见，是三件不同的事。历史最后把它们分开记了账。"},
+  closing:"名字平息了争论。但这个故事的价值，不在名字里。",
+  note:"优先权之争持续数年；“勒维耶星”一名确曾在法国使用。现今通行做法是将亚当斯与勒维耶并列为计算发现者。"
+ },
+ {
+  id:"s12", chapter:"第四章 · 回响", title:"尾声 · 会说话的偏差",
+  date:"此后一百年", place:"全世界的望远镜前", people:["每一位读星的人"],
+  fig:"neptune", figCap:"图 12 · 它在那里，一直都在那里",
+  paras:[
+   "海王星之后，“偏差”有了另一副面孔：观测与理论对不上的地方，不再只是错误或耻辱，也可能是还没被发现的东西，在敲门。",
+   "1930 年，人们用同样的思路寻找“海外行星”，找到了冥王星——虽然事后证明，那一次更多是走运：冥王星太小，根本拉不动天王星。方法被再次使用，运气没有再次站在同一边。",
+   "天空没有变，变的是人们读它的方式：异常常被当作路牌，证据链要一环不缺，对照要有底图，成功也要对账。",
+   "下一道裂缝出现在哪里，没有人事先知道。但已经有人学会了，怎样顺着它找下去。"
+  ],
+  clue:{title:"异常常是指路牌", text:"理论与现实之间的裂缝，有时正是新事物敲门的声音。"},
+  closing:"全卷终。",
+  note:"冥王星的发现方式与海王星相似，但其质量远不足以解释天王星的偏差，科学史上视为方法与运气的又一次混合。"
+ }
+);
+/* ================= 游戏引擎 ================= */
+const LS_KEY = "neptune-pen-v1";
+const SCENE_TERMS = {s03:["arcmin","perturb"], s04:["bode"], s06:["starchart"], s07:["mag8"], s08:["starchart"], s09:["mag8","starchart"], s10:["bode","elements"]};
+const TERM_MAP = Object.fromEntries(TERMS.map(t=>[t.id,t]));
+const SCENES = STORY.scenes;
+const N = SCENES.length;
+
+function blankState(){
+  return {v:1, cursor:0, furthest:0, answers:{}, opinion:{}, startedAt:new Date().toISOString(), completedAt:null};
+}
+function loadState(){ try{const s=JSON.parse(localStorage.getItem(LS_KEY)); return s&&s.v===1?s:null;}catch(e){return null;} }
+let state = loadState() || blankState();
+function save(){ localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+const $app = document.getElementById("app");
+let plainMode = false;
+let view = "shelf";
+
+const esc = s => s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+const nowIso = ()=>new Date().toISOString();
+
+/* ---------- 文本中的术语标注 ---------- */
+function linkTerms(text){
+  let out = esc(text);
+  for(const t of TERMS){
+    if(out.includes(t.term)) out = out.split(t.term).join(`<button class="term" data-term="${t.id}">${t.term}</button>`);
+  }
+  return out;
+}
+
+/* ---------- 顶栏 ---------- */
+function topbar(){
+  return `<div class="topbar"><div class="topbar-inner">
+    <span class="brand"><span class="dot"></span><b>笔尖上的行星</b> · 科学侦探故事</span>
+    <span class="spacer"></span>
+    ${view!=="shelf"?`<button class="top-btn" data-act="shelf">书架</button>`:""}
+    <button class="top-btn ${plainMode?"on":""}" data-act="plain">${plainMode?"图文模式":"简洁阅读"}</button>
+    ${state.completedAt&&view!=="score"?`<button class="top-btn" data-act="score">成绩</button>`:""}
+  </div></div>`;
+}
+
+/* ---------- 书架 ---------- */
+function renderShelf(){
+  const done = !!state.completedAt;
+  const started = state.furthest>0 || state.cursor>0;
+  const quizzes = SCENES.filter(s=>s.quiz).length;
+  const answered = SCENES.filter(s=>s.quiz&&state.answers[s.id]&&state.answers[s.id].passed).length;
+  const progressTxt = done
+    ? "已读完全卷 · 随时重访线索"
+    : started
+      ? `书签：第 ${state.cursor+1} 页 · ${SCENES[Math.min(state.cursor,N-1)].title}`
+      : `尚未开始 · ${N} 幅分镜 · ${quizzes} 处推理`;
+  $app.innerHTML = topbar() + `
+  <div class="wrap">
+    <section class="hero">
+      <p class="kicker">迷雾中的探险 · 科学侦探故事</p>
+      <h1>一页一幅画面。<br/>在谜底揭晓前，由你判断下一步。</h1>
+      <p class="sub">和研究者一起经历困惑、碰壁与重新出发，直到一条线索照亮另一条。</p>
+    </section>
+    <div class="shelf-heading"><h2>全部故事</h2><span>本卷独立成篇 · 自由进入</span></div>
+    <article class="book">
+      <div class="book-cover">${FIG.neptune}</div>
+      <div class="book-body">
+        <p class="kicker">建议第 01 卷 · 观测与理论的裂缝</p>
+        <h2>${STORY.title} · ${STORY.subtitle}</h2>
+        <p class="hook">${STORY.tagline}</p>
+        <p class="skill"><b>核心练习</b> ${STORY.skill}</p>
+        <p class="muted">${progressTxt}${started&&!done?` · 推理已过 ${answered}/${quizzes}`:""}</p>
+        <div class="book-actions">
+          <button class="btn-primary" data-act="open">${done?"重访故事":started?"从书签继续":"翻开故事"} →</button>
+          ${done?`<button class="btn-ghost" data-act="score">查看成绩</button>`:""}
+          ${started?`<button class="btn-text" data-act="restart">从头重读</button>`:""}
+        </div>
+      </div>
+    </article>
+    <p class="shelf-note">每道题都依据当时掌握的证据判断；答错后看解析、再作答，选对后继续。需要时可查看提示。<br/>
+    关键记录由你亲手翻开；也有一处不计分的倾向，留给你自己回望。<br/>
+    书签与成绩保存在本机；历史注记可在阅读时按需展开，区分史实与叙述的加工。</p>
+    <footer class="site"><span>笔尖上的行星 · 海王星发现之谜</span><span>12 幅分镜 · 6 处推理 · 1 处倾向</span></footer>
+  </div>`;
+}
+
+/* ---------- 阅读页 ---------- */
+function renderReader(){
+  const sc = SCENES[state.cursor];
+  const ans = state.answers[sc.id];
+  const hasQuiz = !!sc.quiz;
+  const passed = !hasQuiz || (ans && ans.passed);
+  const isLast = state.cursor === N-1;
+
+  const chips = [
+    `<span class="chip">${esc(sc.date)}</span>`,
+    `<span class="chip">${esc(sc.place)}</span>`,
+    ...sc.people.map(p=>`<span class="chip who">${esc(p)}</span>`)
+  ].join("");
+  const termChips = (SCENE_TERMS[sc.id]||[]).map(id=>`<button class="chip term-chip" data-term="${id}" style="cursor:pointer">术语 · ${esc(TERM_MAP[id].term)}</button>`).join("");
+
+  const paras = sc.paras.map(p=>`<p>${linkTerms(p)}</p>`).join("");
+
+  const fig = `<figure class="fig">${FIG[sc.fig]||""}<figcaption class="cap"><span>${esc(sc.figCap)}</span><span>第 ${state.cursor+1} / ${N} 页</span></figcaption></figure>`;
+
+  let quizHtml = "";
+  if(hasQuiz){
+    const q = sc.quiz;
+    const opts = q.options.map(o=>{
+      const at = ans ? ans.attempts : [];
+      const triedWrong = at.includes(o.id) && o.id!==q.answer;
+      const isRight = ans && ans.passed && o.id===q.answer;
+      let cls = "opt"+(triedWrong&&!isRight?" wrong":"")+(isRight?" right":"");
+      let mark = isRight?'<span class="opt-mark">✓</span>':triedWrong?'<span class="opt-mark">✗</span>':'<span class="opt-mark">○</span>';
+      let resHtml = "";
+      if(at.includes(o.id)){
+        const good = o.id===q.answer;
+        resHtml = `<div class="opt-result ${good?"good":"bad"}"><span class="rt">${good?"此路可通":"此路不通"} · ${esc(o.tag)}</span>${o.result.map(r=>`<p style="margin-bottom:.4em">${esc(r)}</p>`).join("")}<p class="mini-clue">线索 · <b>${esc(o.clue.title)}</b> — ${esc(o.clue.text)}</p></div>`;
+      }
+      return `<button class="${cls}" data-act="choose" data-id="${o.id}" ${ans&&ans.passed?"disabled":""}>${mark}${esc(o.label)}</button>${resHtml}`;
+    }).join("");
+    const hintBtn = ans&&ans.hint ? "" : `<button class="btn-text" data-act="hint" ${ans&&ans.passed?"disabled":""}>需要提示</button>`;
+    const hintBox = ans&&ans.hint ? `<div class="hint-box">提示：${esc(q.hint)}</div>` : "";
+    quizHtml = `<div class="quiz">
+      <p class="q-tag">${esc(q.tag)}</p>
+      <p class="q-text">${esc(q.q)}</p>
+      ${opts}
+      <div class="hint-row">${ans&&ans.passed?`<span style="font-size:.82rem;color:var(--sage)">推理通过 · ${(ans.attempts.length===1&&!ans.hint)?"一次命中":`尝试 ${ans.attempts.length} 次${ans.hint?" · 用过提示":""}`}</span>`:hintBtn}</div>
+      ${hintBox}
+    </div>`;
+  }
+
+  let opinionHtml = "";
+  if(sc.opinion){
+    const cur = state.opinion[sc.id];
+    opinionHtml = `<div class="quiz" style="border-left-color:var(--sage)">
+      <p class="q-tag" style="color:var(--sage)">${esc(sc.opinion.tag)}</p>
+      <p class="q-text">${esc(sc.opinion.q)}</p>
+      ${sc.opinion.options.map(o=>`<button class="opt ${cur===o.id?"right":""}" data-act="opinion" data-id="${o.id}"><span class="opt-mark">${cur===o.id?"✓":"○"}</span>${esc(o.label)}</button>`).join("")}
+      ${cur?`<p style="font-size:.84rem;color:var(--muted)">已记下你的倾向。它与成绩无关——多年以后，你会想知道今天的自己怎样想。</p>`:""}
+    </div>`;
+  }
+
+  const pct = Math.round(((state.cursor+1)/N)*100);
+  $app.innerHTML = topbar() + `
+  <div class="wrap">
+    <div class="progress">
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="plabel"><span>${esc(sc.chapter)}</span><span>第 ${state.cursor+1} / ${N} 页</span></div>
+    </div>
+    <header class="reader-head">
+      <p class="crumb">${esc(sc.chapter)}</p>
+      <h1>${esc(sc.title)}</h1>
+      <div class="meta-chips">${chips}${termChips}</div>
+    </header>
+    ${fig}
+    <div class="paras">${paras}</div>
+    <div class="clue"><span class="tag">线索</span><div><p class="clue-title">${esc(sc.clue.title)}</p><p class="clue-text">${esc(sc.clue.text)}</p></div></div>
+    ${quizHtml}
+    ${opinionHtml}
+    <details class="note"><summary>历史注记 · 史实与叙述的边界</summary><div class="note-body">${esc(sc.note)}</div></details>
+    <p class="closing">${esc(sc.closing)}</p>
+    <nav class="reader-nav">
+      <button class="btn-ghost" data-act="prev" ${state.cursor===0?"disabled":""}>← 上一页</button>
+      ${isLast
+        ? `<button class="btn-primary" data-act="finish" ${passed?"":"disabled"}>完成阅读 · 查看成绩 →</button>`
+        : `<button class="btn-primary" data-act="next" ${passed?"":"disabled"}>${passed?"继续 →":"先完成本页推理"}</button>`}
+    </nav>
+  </div>`;
+  window.scrollTo({top:0});
+}
+
+/* ---------- 结算页 ---------- */
+function gradeOf(){
+  const qs = SCENES.filter(s=>s.quiz);
+  const firstTry = qs.filter(s=>{const a=state.answers[s.id];return a&&a.passed&&a.attempts.length===1;}).length;
+  const hints = qs.filter(s=>state.answers[s.id]&&state.answers[s.id].hint).length;
+  const attempts = qs.reduce((n,s)=>n+((state.answers[s.id]||{attempts:[]}).attempts.length),0);
+  return {qs:qs.length, firstTry, hints, attempts};
+}
+function verdict(g){
+  if(g.firstTry===g.qs) return "六处推理全部一次命中——你读裂缝的方式，已经接近当年的勒维耶。";
+  if(g.firstTry>=4) return "多数推理一次命中。偶尔走错的路，也被你换成了线索。";
+  if(g.firstTry>=2) return "你愿意在岔路口停下来听证据说话——这正是调查者最要紧的习惯。";
+  return "每一条走不通的路都认真走过了。科学史上的真相，也是这样被剩下的。";
+}
+function renderScore(){
+  const g = gradeOf();
+  const dur = state.completedAt ? Math.max(1,Math.round((Date.parse(state.completedAt)-Date.parse(state.startedAt))/60000)) : null;
+  const review = SCENES.filter(s=>s.quiz).map((s,i)=>{
+    const a = state.answers[s.id]||{attempts:[],hint:false};
+    return `<details><summary>推理 ${String(i+1).padStart(2,"0")} · ${esc(s.title)} — ${a.attempts[0]===s.quiz.answer?"一次命中":`尝试 ${a.attempts.length} 次`}${a.hint?" · 用过提示":""}</summary>
+      <div class="rv-body"><p>${esc(s.quiz.q)}</p><p style="margin-top:6px">正解：${esc(s.quiz.options.find(o=>o.id===s.quiz.answer).label)}</p></div></details>`;
+  }).join("");
+  $app.innerHTML = topbar() + `
+  <div class="wrap">
+    <div class="score-card">
+      <p class="kicker">本卷成绩 · ${STORY.title}</p>
+      <h1>顺着裂缝找到尽头的人</h1>
+      <div class="score-grid">
+        <div class="score-cell"><div class="num">${g.firstTry} / ${g.qs}</div><div class="lab">首次命中</div></div>
+        <div class="score-cell"><div class="num">${g.attempts}</div><div class="lab">总尝试次数</div></div>
+        <div class="score-cell"><div class="num">${g.hints}</div><div class="lab">使用提示</div></div>
+        <div class="score-cell"><div class="num">${dur===null?"—":dur}</div><div class="lab">阅读时长（分钟）</div></div>
+      </div>
+      <p class="score-verdict">${verdict(g)}</p>
+      <div class="quiz-review">${review}</div>
+      <div class="book-actions">
+        <button class="btn-primary" data-act="restart">再读一遍</button>
+        <button class="btn-ghost" data-act="shelf">回到书架</button>
+      </div>
+    </div>
+  </div>`;
+  window.scrollTo({top:0});
+}
+
+/* ---------- 术语弹层 ---------- */
+function showTerm(id){
+  const t = TERM_MAP[id]; if(!t) return;
+  const mask = document.createElement("div");
+  mask.className = "pop-mask";
+  mask.innerHTML = `<div class="pop"><h3>${esc(t.term)}</h3><p>${esc(t.meaning)}</p><p class="pop-close"><button class="btn-ghost" data-close>合上</button></p></div>`;
+  mask.addEventListener("click", e=>{ if(e.target===mask || e.target.closest("[data-close]")) mask.remove(); });
+  document.body.appendChild(mask);
+}
+
+/* ---------- 渲染入口与事件 ---------- */
+function render(){
+  document.body.classList.toggle("plain", plainMode);
+  if(view==="shelf") renderShelf();
+  else if(view==="reader") renderReader();
+  else renderScore();
+}
+
+$app.addEventListener("click", e=>{
+  const termBtn = e.target.closest(".term, .term-chip");
+  if(termBtn){ showTerm(termBtn.dataset.term); return; }
+  const btn = e.target.closest("[data-act]");
+  if(!btn || btn.disabled) return;
+  const act = btn.dataset.act;
+  const sc = SCENES[state.cursor];
+
+  if(act==="shelf"){ view="shelf"; render(); }
+  else if(act==="plain"){ plainMode=!plainMode; render(); }
+  else if(act==="score"){ view="score"; render(); }
+  else if(act==="open"){ view="reader"; render(); }
+  else if(act==="restart"){
+    if(confirm("从头重读将清空当前书签与本次作答，确定吗？")){ state = blankState(); save(); view="reader"; render(); }
+  }
+  else if(act==="prev"){ if(state.cursor>0){ state.cursor--; save(); render(); } }
+  else if(act==="next"){
+    if(state.cursor < N-1){
+      state.cursor++;
+      state.furthest = Math.max(state.furthest, state.cursor);
+      save(); render();
+    }
+  }
+  else if(act==="finish"){
+    if(!state.completedAt) state.completedAt = nowIso();
+    save(); view="score"; render();
+  }
+  else if(act==="hint"){
+    const a = state.answers[sc.id] || (state.answers[sc.id]={attempts:[],hint:false,passed:false});
+    a.hint = true; save(); render();
+  }
+  else if(act==="choose"){
+    if(!sc.quiz) return;
+    const a = state.answers[sc.id] || (state.answers[sc.id]={attempts:[],hint:false,passed:false});
+    const id = btn.dataset.id;
+    if(!a.attempts.includes(id)) a.attempts.push(id);
+    if(id===sc.quiz.answer) a.passed = true;
+    save(); render();
+    if(a.passed){ const nav=document.querySelector(".reader-nav"); if(nav) nav.scrollIntoView({behavior:"smooth",block:"end"}); }
+  }
+  else if(act==="opinion"){
+    state.opinion[sc.id] = btn.dataset.id; save(); render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
